@@ -11,9 +11,6 @@ import java.time.LocalDateTime;
 
 @Data
 public class BidDTO {
-//    @JsonInclude(JsonInclude.Include.NON_NULL)
-//    @JsonView(BidJsonView.ViewBid.class)
-//    private Long id;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonView(BidJsonView.ViewCreateBid.class)
     private String bidderName;

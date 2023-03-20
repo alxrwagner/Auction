@@ -13,7 +13,7 @@ public class FullLotDTO {
     private Integer startPrice;
     private Integer bidPrice;
     private Integer currentPrice;
-    private String lastBid;
+    private BidDTO lastBid;
 
     public static FullLotDTO fromLot(Lot lot){
         FullLotDTO fullLotDTO = new FullLotDTO();

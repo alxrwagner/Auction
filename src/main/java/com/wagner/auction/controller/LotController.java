@@ -41,12 +41,12 @@ public class LotController {
     }
 
     @GetMapping("/lot/{id}")
-    public ResponseEntity<FullLotDTO> getFullLot(@PathVariable Long id){
+    public ResponseEntity<?> getFullLot(@PathVariable Long id){
         FullLotDTO fullLotDTO = lotService.getFullLot(id);
         if (fullLotDTO != null){
             return ResponseEntity.ok(fullLotDTO);
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Лот не найден");
     }
 
     @PostMapping("/lot/{id}/start")

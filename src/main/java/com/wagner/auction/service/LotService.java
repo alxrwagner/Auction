@@ -61,10 +61,10 @@ public class LotService {
         return countBids * lot.getBidPrice() + lot.getStartPrice();
     }
 
-    private String findLastBid(Long id) {
+    private BidDTO findLastBid(Long id) {
         log.info("Found last bid was started");
         if (bidService.countBidByLotId(id) != 0) {
-            return bidService.findLastBid(id).getBidderName();
+            return bidService.findLastBid(id);
         }
         return null;
     }

@@ -25,12 +25,8 @@ public class BidService {
         return BidDTO.fromBid(bidRepository.save(bid));
     }
 
-    public BidDTO saveBid(BidDTO bidDTO) {
-        return BidDTO.fromBid(bidRepository.save(bidDTO.toBid()));
-    }
-
     public BidDTO findLastBid(Long id) {
-        return BidDTO.fromBid(bidRepository.findFirstBid(id));
+        return BidDTO.fromBid(bidRepository.findLastBid(id));
     }
 
     public BidDTO findFirstBid(Long id) {
