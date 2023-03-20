@@ -3,6 +3,7 @@ package com.wagner.auction.service;
 import com.wagner.auction.dto.BidDTO;
 import com.wagner.auction.dto.LotDTO;
 import com.wagner.auction.model.Bid;
+import com.wagner.auction.projection.FrequentView;
 import com.wagner.auction.repository.BidRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,5 +36,9 @@ public class BidService {
 
     public Integer countBidByLotId(Long id) {
         return bidRepository.countBidByLotId(id);
+    }
+
+    public BidDTO findFrequent(Long id){
+        return BidDTO.fromBid(bidRepository.findFrequent(id));
     }
 }

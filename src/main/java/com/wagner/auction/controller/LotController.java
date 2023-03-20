@@ -5,13 +5,14 @@ import com.wagner.auction.dto.*;
 import com.wagner.auction.enums.LotStatus;
 import com.wagner.auction.jsonview.BidJsonView;
 import com.wagner.auction.model.Lot;
+import com.wagner.auction.projection.FrequentView;
 import com.wagner.auction.service.BidService;
 import com.wagner.auction.service.LotService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 @RestController
@@ -36,8 +37,8 @@ public class LotController {
     }
 
     @GetMapping("/lot/{id}/frequent")
-    public ResponseEntity<String> getMostFrequentBidder(@PathVariable Long id) {
-        return null;
+    public ResponseEntity<BidDTO> getMostFrequentBidder(@PathVariable Long id) {
+        return ResponseEntity.ok(lotService.findFrequent(id));
     }
 
     @GetMapping("/lot/{id}")
@@ -99,7 +100,7 @@ public class LotController {
 
     @GetMapping("/lot")
     public ResponseEntity<List<LotDTO>> getAll(Pageable pageable){
-        return null;
+        return ResponseEntity.ok(lotService.getAllLots(pageable));
     }
 
     @GetMapping("/lot/export")

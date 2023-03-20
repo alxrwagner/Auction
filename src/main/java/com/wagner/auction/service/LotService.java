@@ -4,11 +4,16 @@ import com.wagner.auction.dto.*;
 import com.wagner.auction.enums.LotStatus;
 import com.wagner.auction.model.Bid;
 import com.wagner.auction.model.Lot;
+import com.wagner.auction.projection.FrequentView;
 import com.wagner.auction.repository.BidRepository;
 import com.wagner.auction.repository.LotRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -97,7 +102,14 @@ public class LotService {
         return bidService.createBid(bidDTO, lotDTO);
     }
 
-    public String findFrequent(Long id){
-return null;
+    public BidDTO findFrequent(Long id){
+        return bidService.findFrequent(id);
+    }
+
+    @Transactional
+    public List<LotDTO> getAllLots(Pageable pageable) {
+        log.info("Was invoke method for find all lots by page");
+
+        return lotRepository.findAll(pageable).getContent().stream().map(LotDTO::fromLot).collect(Collectors.toList());
     }
 }
