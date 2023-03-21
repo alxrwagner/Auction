@@ -38,7 +38,7 @@ public class BidService {
         return bidRepository.countBidByLotId(id);
     }
 
-    public BidDTO findFrequent(Long id){
-        return BidDTO.fromBid(bidRepository.findFrequent(id));
+    public FrequentView findFrequent(Long id){
+        return bidRepository.findFrequent(id);
     }
 }

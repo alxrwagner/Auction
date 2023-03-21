@@ -3,6 +3,7 @@ package com.wagner.auction.service;
 import com.wagner.auction.dto.*;
 import com.wagner.auction.enums.LotStatus;
 import com.wagner.auction.model.Lot;
+import com.wagner.auction.projection.FrequentView;
 import com.wagner.auction.repository.LotRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@Transactional
 public class LotService {
 
     private final LotRepository lotRepository;
@@ -24,7 +26,6 @@ public class LotService {
         this.bidService = bidService;
     }
 
-    @Transactional
     public LotDTO createLot(CreateLot createLot) {
         Lot lot = createLot.toLot();
         lot.setStatus(LotStatus.CREATED);
@@ -32,16 +33,15 @@ public class LotService {
         return LotDTO.fromLot(lotRepository.save(lot));
     }
 
-    @Transactional
     public FullLotDTO findLotById(Long lotId) {
         Lot lot = lotRepository.findById(lotId).orElse(null);
         if (lot == null) {
             return null;
         }
+        log.info("Find lot by id");
         return FullLotDTO.fromLot(lot);
     }
 
-    @Transactional
     public FullLotDTO getFullLot(Long id) {
         Lot lot = lotRepository.findById(id).orElse(null);
 
@@ -76,18 +76,21 @@ public class LotService {
         if (bidDTO == null) {
             return null;
         }
+        log.info("Find first bid");
         return bidDTO;
     }
 
     public FullLotDTO startBiding(FullLotDTO fullLotDTO) {
         Lot lot = fullLotDTO.toLot();
         lot.setStatus(LotStatus.STARTED);
+        log.info("STARTED lot status is set");
         return FullLotDTO.fromLot(lotRepository.save(lot));
     }
 
     public LotDTO stopBiding(FullLotDTO fullLotDTO) {
         Lot lot = fullLotDTO.toLot();
         lot.setStatus(LotStatus.STOPPED);
+        log.info("STOPPED lot status is set");
         return LotDTO.fromLot(lotRepository.save(lot));
     }
 
@@ -96,10 +99,12 @@ public class LotService {
         if (lotDTO == null){
             return null;
         }
+        log.info("Place a bid");
         return bidService.createBid(bidDTO, lotDTO);
     }
 
-    public BidDTO findFrequent(Long id){
+    public FrequentView findFrequent(Long id){
+        log.info("Find frequent was started");
         return bidService.findFrequent(id);
     }
 

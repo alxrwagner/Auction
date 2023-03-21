@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wagner.auction.dto.*;
 import com.wagner.auction.enums.LotStatus;
 import com.wagner.auction.jsonview.BidJsonView;
+import com.wagner.auction.projection.FrequentView;
 import com.wagner.auction.service.LotService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -40,7 +41,7 @@ public class LotController {
     }
 
     @GetMapping("/lot/{id}/frequent")
-    public ResponseEntity<BidDTO> getMostFrequentBidder(@PathVariable Long id) {
+    public ResponseEntity<FrequentView> getMostFrequentBidder(@PathVariable Long id) {
         return ResponseEntity.ok(lotService.findFrequent(id));
     }
 
@@ -112,7 +113,8 @@ public class LotController {
         StringWriter out = new StringWriter();
         CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT);
 
-        lotsList.forEach(fullLotDTO ->
+
+        lotsList.stream().forEach(fullLotDTO ->
         {
             try {
                 printer.printRecord(fullLotDTO.getId(),
@@ -129,7 +131,7 @@ public class LotController {
         response.setContentType("text/csv");
         response.setHeader("Content-Disposition", "attachment; filename=\"lots.csv\"");
         PrintWriter writer = response.getWriter();
-        writer.write(writer.toString());
+        writer.write(out.toString());
         writer.flush();
         writer.close();
         return ResponseEntity.ok().build();
