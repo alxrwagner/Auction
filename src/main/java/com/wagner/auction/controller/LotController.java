@@ -4,15 +4,18 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wagner.auction.dto.*;
 import com.wagner.auction.enums.LotStatus;
 import com.wagner.auction.jsonview.BidJsonView;
-import com.wagner.auction.model.Lot;
-import com.wagner.auction.projection.FrequentView;
-import com.wagner.auction.service.BidService;
 import com.wagner.auction.service.LotService;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 @RestController
@@ -99,12 +102,36 @@ public class LotController {
     }
 
     @GetMapping("/lot")
-    public ResponseEntity<List<LotDTO>> getAll(Pageable pageable){
-        return ResponseEntity.ok(lotService.getAllLots(pageable));
+    public ResponseEntity<List<LotDTO>> getAll(@RequestParam LotStatus status, Pageable pageable){
+        return ResponseEntity.ok(lotService.getAllLots(status, pageable));
     }
 
     @GetMapping("/lot/export")
-    public ResponseEntity<String> getCSVFile(){
-        return null;
+    public ResponseEntity<String> getCSVFile(HttpServletResponse response) throws IOException {
+        List<FullLotDTO> lotsList = lotService.getExportList();
+        StringWriter out = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT);
+
+        lotsList.forEach(fullLotDTO ->
+        {
+            try {
+                printer.printRecord(fullLotDTO.getId(),
+                        fullLotDTO.getTitle(),
+                        fullLotDTO.getStatus(),
+                        fullLotDTO.getLastBid() != null ? fullLotDTO.getLastBid().getBidderName() : "empty",
+                        fullLotDTO.getCurrentPrice());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        printer.flush();
+
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=\"lots.csv\"");
+        PrintWriter writer = response.getWriter();
+        writer.write(writer.toString());
+        writer.flush();
+        writer.close();
+        return ResponseEntity.ok().build();
     }
 }

@@ -2,10 +2,7 @@ package com.wagner.auction.service;
 
 import com.wagner.auction.dto.*;
 import com.wagner.auction.enums.LotStatus;
-import com.wagner.auction.model.Bid;
 import com.wagner.auction.model.Lot;
-import com.wagner.auction.projection.FrequentView;
-import com.wagner.auction.repository.BidRepository;
 import com.wagner.auction.repository.LotRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -107,9 +104,18 @@ public class LotService {
     }
 
     @Transactional
-    public List<LotDTO> getAllLots(Pageable pageable) {
+    public List<LotDTO> getAllLots(LotStatus status, Pageable pageable) {
         log.info("Was invoke method for find all lots by page");
 
-        return lotRepository.findAll(pageable).getContent().stream().map(LotDTO::fromLot).collect(Collectors.toList());
+        return lotRepository.findAllByStatus(status, pageable).stream().map(LotDTO::fromLot).collect(Collectors.toList());
+    }
+
+    public List<FullLotDTO> getExportList() {
+        return lotRepository.findAll()
+                .stream()
+                .map(FullLotDTO::fromLot)
+                .peek(fullLotDTO -> fullLotDTO.setCurrentPrice(getCurrentPrice(fullLotDTO.getId())))
+                .peek(fullLotDTO -> fullLotDTO.setLastBid(findLastBid(fullLotDTO.getId())))
+                .collect(Collectors.toList());
     }
 }
